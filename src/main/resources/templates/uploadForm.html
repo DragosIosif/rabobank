@@ -1,0 +1,41 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+
+<a href="/launchJob">LAUNCH JOB</a>
+
+<div th:if="${message}">
+    <h2 th:text="${message}"/>
+</div>
+
+<div>
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <table>
+            <tr>
+                <td>File to upload:</td>
+                <td><input type="file" name="file"/></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Upload"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div>
+    <table>
+        <thead>
+        <tr>
+            <td>Transaction reference</td>
+            <td>Failure reason</td>
+        </tr>
+        </thead>
+        <tr th:each="transaction : ${failedTransactions}">
+            <td th:text="${transaction.getReference()}"></td>
+            <td th:text="${transaction.getReason()}"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
