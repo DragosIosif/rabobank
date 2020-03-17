@@ -85,26 +85,6 @@ public class SpringBatchIntegrationTest {
         Assert.assertThat(actual, CoreMatchers.hasItems(expectedFailedTransactions));
     }
 
-    @Test
-    public void givenExpectedOutput_whenJobExecuted_thenSuccess2() throws Exception {
-        // given
-        final FailedTransaction[] expectedFailedTransactions = getExpectedFailedTransactions();
-
-        // when
-        JobExecution jobExecution = jobLauncherTestUtils.launchJob(new JobParameters());
-
-        // then
-        JobInstance actualJobInstance = jobExecution.getJobInstance();
-        Assert.assertEquals("validateStatementsJob", actualJobInstance.getJobName());
-
-        ExitStatus actualJobExitStatus = jobExecution.getExitStatus();
-        Assert.assertEquals(actualJobExitStatus.getExitCode(), "COMPLETED");
-
-        final List<FailedTransaction> actual = failedTransactionService.findAll();
-        Assert.assertEquals(10, actual.size());
-        Assert.assertThat(actual, CoreMatchers.hasItems(expectedFailedTransactions));
-    }
-
     private FailedTransaction[] getExpectedFailedTransactions(){
         return new FailedTransaction[] {
                 new FailedTransaction(132843L, "Invalid Balance"),
