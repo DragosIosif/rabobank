@@ -1,5 +1,8 @@
-package com.rabobank.assignment.storage;
+package com.rabobank.assignment.service;
 
+import com.rabobank.assignment.model.StorageProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -9,6 +12,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -16,35 +21,49 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+/**
+ * Default implementation of StorageService
+ */
 @Service
-public class FileSystemStorageService implements StorageService {
+public class StorageServiceImpl implements StorageService {
+    private static final Logger log = LoggerFactory.getLogger(StorageServiceImpl.class);
 
     private final Path rootLocation;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) {
+    public StorageServiceImpl(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
     }
 
     @Override
     public void store(MultipartFile file) {
+        if(file == null){
+            return;
+        }
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
-            if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file " + filename);
-            }
-            if (filename.contains("..")) {
-                // This is a security check
-                throw new StorageException(
-                        "Cannot store file with relative path outside current directory "
-                                + filename);
+            if (file.isEmpty() || filename.contains("..")) {
+                log.error("Cannot store file. File empty or name invalid. " + filename);
+                return;
             }
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, this.rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            throw new StorageException("Failed to store file " + filename, e);
+            log.error("Failed to store file " + filename, e);
+        }
+    }
+
+    @Override
+    public void copyFile(File file) {
+        if (file == null) {
+            return;
+        }
+        try (final InputStream inputStream = new FileInputStream(file)) {
+            Files.copy(inputStream, this.rootLocation.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -62,11 +81,6 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Path load(String filename) {
-        return rootLocation.resolve(filename);
-    }
-
-    @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
@@ -77,7 +91,7 @@ public class FileSystemStorageService implements StorageService {
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new StorageException("Could not initialize storage", e);
+            log.error("Could not initialize storage", e);
         }
     }
 }

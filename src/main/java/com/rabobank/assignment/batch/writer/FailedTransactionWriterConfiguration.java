@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration class for writing FailedTransactions
+ */
 @Configuration
-public class CustomerStatementWriterConfiguration {
+public class FailedTransactionWriterConfiguration {
 
     @Bean
     public JdbcBatchItemWriter<FailedTransaction> writer(DataSource dataSource) {

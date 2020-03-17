@@ -6,8 +6,12 @@ import org.springframework.batch.item.ItemProcessor;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Perform a validation of the transaction reference.
+ * If the reference is not unique, the transaction is marked as invalid and the reason is provided
+ */
 public class CustomerTransactionReferenceValidator implements ItemProcessor<CustomerTransaction, CustomerTransaction> {
-    private static final String INVALID_REFERENCE = "Invalid reference";
+    static final String INVALID_REFERENCE = "Invalid reference";
     private final Set<Long> transactionReferences = new HashSet<>();
 
     @Override

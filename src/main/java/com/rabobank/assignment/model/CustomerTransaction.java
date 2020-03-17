@@ -3,6 +3,9 @@ package com.rabobank.assignment.model;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Representation of a customer transaction
+ */
 public class CustomerTransaction {
     private Long reference;
     private String accountNumber;

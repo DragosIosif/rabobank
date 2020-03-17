@@ -1,7 +1,7 @@
 package com.rabobank.assignment.batch.reader;
 
 import com.rabobank.assignment.model.CustomerTransaction;
-import com.rabobank.assignment.storage.StorageService;
+import com.rabobank.assignment.service.StorageService;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -20,6 +20,9 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration class for reading CustomerTransactions from xml files
+ */
 @Configuration
 public class XmlReaderConfiguration {
 
@@ -42,7 +45,8 @@ public class XmlReaderConfiguration {
     public StaxEventItemReader<CustomerTransaction> xmlReader() {
         return new StaxEventItemReaderBuilder<CustomerTransaction>()
                 .name("xmlReader")
-                .resource(new ClassPathResource("static/records.xml"))
+                //a resource is needed, otherwise the bean will not be created
+                .resource(new ClassPathResource(""))
                 .addFragmentRootElements("record")
                 .unmarshaller(customerStatementMarshaller())
                 .build();

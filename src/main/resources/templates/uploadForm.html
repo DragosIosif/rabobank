@@ -1,13 +1,7 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
 <body>
-
-<a href="/launchJob">LAUNCH JOB</a>
-
-<div th:if="${message}">
-    <h2 th:text="${message}"/>
-</div>
-
 <div>
+    <h3>Upload files to validate</h3>
     <form method="POST" enctype="multipart/form-data" action="/">
         <table>
             <tr>
@@ -20,9 +14,13 @@
             </tr>
         </table>
     </form>
+    <a href="/launchJob"><button type="button">Validate files & Show results</button></a>
+    <a href="/deleteRecords"><button type="button">Delete results</button></a>
+    <a href="/deleteFiles"><button type="button">Delete files</button></a>
 </div>
 
-<div>
+<div th:if="${failedTransactions}">
+    <h3>Results</h3>
     <table>
         <thead>
         <tr>

@@ -4,6 +4,7 @@ import com.rabobank.assignment.model.CustomerTransaction;
 import com.rabobank.assignment.model.FailedTransaction;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -14,7 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for batch processing
+ */
 @Configuration
+@EnableBatchProcessing
 public class BatchConfiguration {
 
     @Autowired
@@ -24,8 +29,8 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Step step1(MultiResourceItemReader<CustomerTransaction> multiResourceCsvReader, CompositeItemProcessor<CustomerTransaction, FailedTransaction> processor, JdbcBatchItemWriter<FailedTransaction> writer) {
-        return stepBuilderFactory.get("step1")
+    public Step csvStep(MultiResourceItemReader<CustomerTransaction> multiResourceCsvReader, CompositeItemProcessor<CustomerTransaction, FailedTransaction> processor, JdbcBatchItemWriter<FailedTransaction> writer) {
+        return stepBuilderFactory.get("csvStep")
                 .<CustomerTransaction, FailedTransaction>chunk(10)
                 .reader(multiResourceCsvReader)
                 .processor(processor)
@@ -34,8 +39,8 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step step2(MultiResourceItemReader<CustomerTransaction> multiResourceXmlReader, CompositeItemProcessor<CustomerTransaction, FailedTransaction> processor, JdbcBatchItemWriter<FailedTransaction> writer) {
-        return stepBuilderFactory.get("step2")
+    public Step xmlStep(MultiResourceItemReader<CustomerTransaction> multiResourceXmlReader, CompositeItemProcessor<CustomerTransaction, FailedTransaction> processor, JdbcBatchItemWriter<FailedTransaction> writer) {
+        return stepBuilderFactory.get("xmlStep")
                 .<CustomerTransaction, FailedTransaction>chunk(10)
                 .reader(multiResourceXmlReader)
                 .processor(processor)
@@ -44,12 +49,11 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job importStatementJob(JobCompletionNotificationListener listener, Step step1, Step step2) {
-        return jobBuilderFactory.get("importUserJob")
+    public Job importStatementJob(Step csvStep, Step xmlStep) {
+        return jobBuilderFactory.get("validateStatementsJob")
                 .incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .flow(step1)
-                .next(step2)
+                .flow(csvStep)
+                .next(xmlStep)
                 .end()
                 .build();
     }

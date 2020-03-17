@@ -1,7 +1,10 @@
-package com.rabobank.assignment.storage;
+package com.rabobank.assignment.model;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Representation of the storage related properties
+ */
 @ConfigurationProperties("storage")
 public class StorageProperties {
 

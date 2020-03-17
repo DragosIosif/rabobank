@@ -6,7 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-
+/**
+ * Filters invalid CustomerTransactions.
+ * If a CustomerTransaction is valid, it will be ignored.
+ * If a CustomerTransaction is invalid, it is transformed into a FailedTransaction
+ */
 public class CustomerTransactionFilter implements ItemProcessor<CustomerTransaction, FailedTransaction> {
 
     private static final Logger log = LoggerFactory.getLogger(CustomerTransactionFilter.class);

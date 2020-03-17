@@ -1,7 +1,7 @@
 package com.rabobank.assignment.batch.reader;
 
 import com.rabobank.assignment.model.CustomerTransaction;
-import com.rabobank.assignment.storage.StorageService;
+import com.rabobank.assignment.service.StorageService;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.MultiResourceItemReader;
@@ -13,9 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+/**
+ * Configuration class for reading CustomerTransactions from csv files
+ */
 @Configuration
 public class CsvReaderConfiguration {
-
 
     @Autowired
     private StorageService storageService;
